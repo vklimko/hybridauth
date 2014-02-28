@@ -26,7 +26,15 @@ class Hybrid_Providers_LinkedIn extends Hybrid_Provider_Model
 		require_once Hybrid_Auth::$config["path_libraries"] . "OAuth/OAuth.php";
 		require_once Hybrid_Auth::$config["path_libraries"] . "LinkedIn/LinkedIn.php";
 
-		$this->api = new LinkedIn( array( 'appKey' => $this->config["keys"]["key"], 'appSecret' => $this->config["keys"]["secret"], 'callbackUrl' => $this->endpoint ) );
+		$cfg = array(
+			'appKey' => $this->config["keys"]["key"],
+			'appSecret' => $this->config["keys"]["secret"],
+			'callbackUrl' => $this->endpoint
+		);
+		if (isset($this->config["scope"])) {
+			$cfg['scope'] = $this->config["scope"];
+		}
+		$this->api = new LinkedIn($cfg);
 
 		if( $this->token( "access_token_linkedin" ) ){
 			$this->api->setTokenAccess( $this->token( "access_token_linkedin" ) );

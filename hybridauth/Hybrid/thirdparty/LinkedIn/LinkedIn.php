@@ -122,8 +122,8 @@ class LinkedIn {
 	const _URL_ACCESS                  = 'https://api.linkedin.com/uas/oauth/accessToken';
 	const _URL_API                     = 'https://api.linkedin.com';
 	const _URL_AUTH                    = 'https://www.linkedin.com/uas/oauth/authenticate?oauth_token=';
-	//const _URL_REQUEST                 = 'https://api.linkedin.com/uas/oauth/requestToken?scope=r_basicprofile+r_emailaddress+rw_nus+r_network'; 
-	const _URL_REQUEST                 = 'https://api.linkedin.com/uas/oauth/requestToken?scope=r_fullprofile+r_emailaddress'; 
+	const _DEFAULT_SCOPE               = 'r_basicprofile+r_emailaddress';
+	const _URL_REQUEST                 = 'https://api.linkedin.com/uas/oauth/requestToken?scope=';
 	const _URL_REVOKE                  = 'https://api.linkedin.com/uas/oauth/invalidateToken';
 	
 	// Library version
@@ -135,7 +135,8 @@ class LinkedIn {
   
   // application properties
   protected $application_key, 
-            $application_secret;
+            $application_secret,
+            $application_scope       = self::_DEFAULT_SCOPE;
   
   // the format of the data to return
   protected $response_format         = self::_DEFAULT_RESPONSE_FORMAT;
@@ -162,9 +163,12 @@ class LinkedIn {
       // bad data passed
 		  throw new LinkedInException('LinkedIn->__construct(): bad data passed, $config must be of type array.');
     }
-    $this->setApplicationKey($config['appKey']);
+	  $this->setApplicationKey($config['appKey']);
 	  $this->setApplicationSecret($config['appSecret']);
 	  $this->setCallbackUrl($config['callbackUrl']);
+	  if (!empty($config['scope'])) {
+	      $this->setApplicationScope($config['scope']);
+	  }
 	}
 	
 	/**
@@ -882,6 +886,16 @@ class LinkedIn {
 	 */
 	public function getCallbackUrl() {
 	  return $this->callback;
+	}
+
+	/**
+	 * Get the application_scope property.
+	 *
+	 * @return str
+	 *    The application scope.
+	 */
+	public function getApplicationScope() {
+	  return $this->application_scope;
 	}
   
   /**
@@ -1847,7 +1861,12 @@ class LinkedIn {
     $parameters = array(
       'oauth_callback' => $this->getCallbackUrl()
     );
-    $response = $this->fetch(self::_METHOD_TOKENS, self::_URL_REQUEST, NULL, $parameters);
+    $response = $this->fetch(
+      self::_METHOD_TOKENS,
+      self::_URL_REQUEST . $this->application_scope,
+      NULL,
+      $parameters
+    );
     parse_str($response['linkedin'], $response['linkedin']);
     
     /**
@@ -2036,7 +2055,17 @@ class LinkedIn {
 	public function setApplicationSecret($secret) {
 	  $this->application_secret = $secret;
 	}
-	
+
+	/**
+	 * Set the application_scope property.
+	 *
+	 * @param str $scope
+	 *    The application secret.
+	 */
+	public function setApplicationScope($scope) {
+	  $this->application_scope = urlencode($scope);
+	}
+
 	/**
 	 * Set the callback property.
 	 * 
