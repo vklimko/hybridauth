@@ -7,13 +7,13 @@
 
 /**
  * Hybrid_Providers_LinkedIn provider adapter based on OAuth1 protocol
- * 
+ *
  * Hybrid_Providers_LinkedIn use linkedinPHP library created by fiftyMission Inc.
- * 
+ *
  * http://hybridauth.sourceforge.net/userguide/IDProvider_info_LinkedIn.html
  */
 class Hybrid_Providers_LinkedIn extends Hybrid_Provider_Model
-{ 
+{
 	/**
 	* IDp wrappers initializer
 	*/
@@ -38,6 +38,11 @@ class Hybrid_Providers_LinkedIn extends Hybrid_Provider_Model
 
 		if( $this->token( "access_token_linkedin" ) ){
 			$this->api->setTokenAccess( $this->token( "access_token_linkedin" ) );
+		} elseif (isset($this->config["oauth_user"])) {
+			$this->api->setToken(array(
+				'oauth_token' => $this->config["oauth_user"]['token'],
+				'oauth_token_secret' => $this->config["oauth_user"]['secret']
+			));
 		}
 	}
 
@@ -235,7 +240,7 @@ class Hybrid_Providers_LinkedIn extends Hybrid_Provider_Model
 
 		$updates = new SimpleXMLElement( $response['linkedin'] );
 
-		$activities = ARRAY(); 
+		$activities = ARRAY();
 
 		foreach( $updates->update as $update ) {
 			$person = $update->{'update-content'}->person;
