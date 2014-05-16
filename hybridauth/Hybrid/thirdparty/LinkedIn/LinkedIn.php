@@ -125,6 +125,7 @@ class LinkedIn {
 	const _DEFAULT_SCOPE               = 'r_basicprofile+r_emailaddress';
 	const _URL_REQUEST                 = 'https://api.linkedin.com/uas/oauth/requestToken?scope=';
 	const _URL_REVOKE                  = 'https://api.linkedin.com/uas/oauth/invalidateToken';
+	const _URL_AUTHORIZE_SUBMIT        = 'https://www.linkedin.com/uas/oauth/authorize/submit';
 	
 	// Library version
 	const _VERSION                     = '3.2.0';
